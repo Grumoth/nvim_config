@@ -55,11 +55,6 @@ vim.cmd([[
 --         require("telescope.builtin").project,
 --     { desc = "[S]Search th:is shite [P]rojekt" }
 -- )
-
-
-
-
-
 --------------------------------------------------------------------------- ALT D PARA COMENTAR
 -- Modo normal: Alternar comentario en la línea actual
 vim.keymap.set("n", "<M-d>", function()
