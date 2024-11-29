@@ -1,3 +1,14 @@
+--#########################################
+--############# FORMAT JSON
+vim.api.nvim_create_autocmd("BufReadPost", {
+    pattern = "*.json",
+    callback = function()
+        vim.cmd("%!jq .") -- Ejecuta jq para formatear el JSON
+    end,
+    desc = "Autoformat JSON on open with jq",
+})
+
+--#########################################
 -- automatically source and re-compile packer whenever you save this init.lua
 local packer_augroup = vim.api.nvim_create_augroup("Packer", { clear = true })
 vim.api.nvim_create_autocmd("BufWritePost", {

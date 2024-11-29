@@ -78,6 +78,7 @@ require("nvim-treesitter.configs").setup {
         "lua",
         "help",
         "vim",
+        'json',
     },
     sync_install = false,
     auto_install = true,
@@ -228,7 +229,7 @@ local servers = {
     },
 }
 
-local ensure_installed_servers = { "lua_ls" }
+local ensure_installed_servers = { "lua_ls","jsonls" }
 
 -- [[ Configure null-ls ]]
 local null_ls = require("null-ls")
@@ -251,7 +252,7 @@ local null_ls_on_attach = function(client, bufnr)
     end
 
     vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
-    vim.api.nvim_create_autocmd("BufWritePre", {
+    vim.app.nvim_create_autocmd("BufWritePre", {
         group = augroup,
         buffer = bufnr,
         callback = function()
@@ -282,9 +283,17 @@ require("mason").setup()
 
 -- Ensure the servers above are installed
 local mason_lspconfig = require("mason-lspconfig")
-
+local lspconfig = require("lspconfig")
 mason_lspconfig.setup {
     ensure_installed = ensure_installed_servers,
+}
+lspconfig.jsonls.setup {
+    settings = {
+        json = {
+            schemas = require("schemastore").json.schemas(), -- Opcional: auto-esquemas
+            validate = { enable = true },
+        },
+    },
 }
 
 for server, opts in pairs(servers) do

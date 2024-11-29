@@ -13,11 +13,23 @@ require("telescope").setup {
     },
     pickers = {
         find_files = {
-            find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
+            find_command = { "rg", "--files", "--hidden","-L", "--glob", "!.git/*" },
+            follow = true,
             -- cwd = require("project_nvim").get_project_root(),
             -- cwd = require("projec"),
             -- cwd = require("project").get_project_root(),
         },
+    },
+    vimgrep_arguments = {
+      'rg',
+      '--color=never',
+        '-L',
+      '--no-heading',
+      '--with-filename',
+      '--line-number',
+      '--column',
+      '--smart-case',
+      '--follow' -- Esta opción permite seguir enlaces simbólicos.
     },
     extensions = {
         fzf = {
@@ -26,6 +38,12 @@ require("telescope").setup {
             override_file_sorter = true,
             case_mode = "smart_case",
         },
+        -- file_browser = {
+        --   hijack_netrw = true,
+        --   respect_gitignore = false,
+        --   hidden = true, -- Mostrar archivos ocultos
+        --   follow = true, -- Seguir enlaces simbólicos
+        -- },
     },
 }
 
@@ -136,13 +154,24 @@ end, { desc = "Fuzzy find commands and complete on Enter" })
 ----------------------------------------------------------------- BROWSER
 -- Cargar la extensión del navegador de archivos
 require("telescope").load_extension("file_browser")
+
 -- Keymap para abrir el navegador de archivos
 vim.keymap.set("n", "<leader>,", function()
     require("telescope").extensions.file_browser.file_browser {
-        path = "%:p:h", -- Abre en el directorio actual del archivo
-        cwd = vim.fn.expand("%:p:h"), -- Usa la ruta del archivo actual como raíz
-        hidden = true, -- Mostrar archivos ocultos
+        path = vim.fn.expand("%:p:h"), -- Usa la ruta del archivo actual como raíz
+        cwd = vim.fn.expand("%:p:h"), -- Configura el directorio de trabajo
+        hidden = true, -- Mostrar archivos oculto
+        -- follow = true, -- Seguir enlaces simbólicos
         grouped = true, -- Agrupar carpetas primero
-        respect_gitignore = false, -- Ignorar .gitignore (puedes cambiar a true si prefieres respetarlo)
+        respect_gitignore = false, -- Ignorar .gitignore
     }
 end, { desc = "[,] File Browser" })
+
+
+--------------------------------------------------------------------- JSON  KEYS
+vim.keymap.set('n', '<leader>fs', function()
+    require('telescope.builtin').live_grep({
+        prompt_title = "Search JSON keys",
+        search_dirs = { vim.fn.expand('%:p') }, -- Buscar solo en el archivo actual
+    })
+end, { desc = "Buscar claves en JSON" })

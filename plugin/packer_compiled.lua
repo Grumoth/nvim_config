@@ -149,6 +149,11 @@ _G.packer_plugins = {
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/neodev.nvim",
     url = "https://github.com/folke/neodev.nvim"
   },
+  ["nui.nvim"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/nui.nvim",
+    url = "https://github.com/MunifTanjim/nui.nvim"
+  },
   ["null-ls.nvim"] = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/null-ls.nvim",
@@ -174,6 +179,17 @@ _G.packer_plugins = {
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
     url = "https://github.com/neovim/nvim-lspconfig"
   },
+  ["nvim-navbuddy"] = {
+    config = { "\27LJ\2\nc\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\blsp\1\0\1\blsp\0\1\0\1\16auto_attach\2\nsetup\18nvim-navbuddy\frequire\0" },
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/nvim-navbuddy",
+    url = "https://github.com/SmiteshP/nvim-navbuddy"
+  },
+  ["nvim-navic"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/nvim-navic",
+    url = "https://github.com/SmiteshP/nvim-navic"
+  },
   ["nvim-treesitter"] = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
@@ -185,6 +201,11 @@ _G.packer_plugins = {
     needs_bufread = false,
     path = "/home/kike/.local/share/nvim/site/pack/packer/opt/nvim-treesitter-textobjects",
     url = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
+  },
+  ["nvim-ufo"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/nvim-ufo",
+    url = "https://github.com/kevinhwang91/nvim-ufo"
   },
   ["packer.nvim"] = {
     loaded = true,
@@ -200,6 +221,16 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/project.nvim",
     url = "https://github.com/ahmedkhalf/project.nvim"
+  },
+  ["promise-async"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/promise-async",
+    url = "https://github.com/kevinhwang91/promise-async"
+  },
+  ["schemastore.nvim"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/schemastore.nvim",
+    url = "https://github.com/b0o/schemastore.nvim"
   },
   ["telescope-file-browser.nvim"] = {
     loaded = true,
@@ -242,6 +273,10 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
+-- Config for: nvim-navbuddy
+time([[Config for nvim-navbuddy]], true)
+try_loadstring("\27LJ\2\nc\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\blsp\1\0\1\blsp\0\1\0\1\16auto_attach\2\nsetup\18nvim-navbuddy\frequire\0", "config", "nvim-navbuddy")
+time([[Config for nvim-navbuddy]], false)
 -- Conditional loads
 time([[Conditional loading of telescope-fzf-native.nvim]], true)
   require("packer.load")({"telescope-fzf-native.nvim"}, {}, _G.packer_plugins)

@@ -24,6 +24,7 @@ bootstrap_packer()
 -- for each package listed here, you can search on github for their
 -- name to know more
 require("packer").startup(function(use)
+    --##############################################################
     ------------------------------------------------------------------- yorl de marras
     use("windwp/nvim-autopairs")
     use("ahmedkhalf/project.nvim")
@@ -32,6 +33,29 @@ require("packer").startup(function(use)
         "nvim-telescope/telescope-file-browser.nvim",
         requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
     }
+    use { 
+        'kevinhwang91/nvim-ufo',
+        requires = 'kevinhwang91/promise-async'
+    }
+    use {
+        'SmiteshP/nvim-navbuddy',
+        requires = {
+            'SmiteshP/nvim-navic',
+            'MunifTanjim/nui.nvim',
+            'nvim-treesitter/nvim-treesitter',
+        },
+        config = function()
+            require('nvim-navbuddy').setup(
+                {
+                    lsp = {
+                        auto_attach = true,
+                    }
+                }
+            )
+        end
+    }
+    use "b0o/schemastore.nvim"
+    --##################################################################
     -- package manger
     use { "wbthomason/packer.nvim" }
 
