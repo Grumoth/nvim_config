@@ -1,9 +1,11 @@
+local actions = require("telescope.actions")
 require("telescope").setup {
     defaults = {
         mappings = {
             i = {
                 ["<C-u>"] = false,
                 ["<C-d>"] = false,
+                ["<Tab>"] = actions.select_default,
             },
         },
         -- Detectar la raíz del proyecto basado en `project.godot` o `.git`
@@ -84,10 +86,63 @@ vim.keymap.set(
     { desc = "[S]earch [D]iagnostics" }
 )
 
-
 vim.keymap.set("n", "<leader>.", function()
-    require("telescope.builtin").find_files({
+    require("telescope.builtin").find_files {
         prompt_title = "Search .gd files in Project",
-        find_command = { "rg", "--files", "--hidden", "--glob", "*.gd", "--glob", "!.git/*" },
-    })
+        find_command = {
+            "rg",
+            "--files",
+            "--hidden",
+            "--glob",
+            "*.gd",
+            "--glob",
+            "!.git/*",
+        },
+    }
 end, { desc = "[.] Search .gd files in project" })
+
+
+------------------------------------------------------------------------------
+----------------------------------------------------------------- COMMANDS
+vim.keymap.set("n", "<M-x>", function()
+    require("telescope.builtin").commands({
+        prompt_title = "Command Palette",
+        attach_mappings = function(_, map)
+            local actions = require("telescope.actions")
+            local action_state = require("telescope.actions.state")
+
+            -- Mapear <CR> (Enter) para comportarse como Tab
+            -- map("i", "<CR>", function(prompt_bufnr)
+            --     local selection = action_state.get_selected_entry()
+            --     if selection and selection.value then
+            --         -- Completar la línea de comandos con el comando seleccionado
+            --         vim.api.nvim_feedkeys(":" .. selection.value, "n", false)
+            --     else
+            --         vim.notify("No command selected", vim.log.levels.WARN)
+            --     end
+            --     actions.close(prompt_bufnr) -- Cierra Telescope
+            -- end)
+
+            -- -- Asegurarse de que Tab siga funcionando
+            -- map("i", "<Tab>", actions.move_selection_next)
+
+            return true
+        end,
+    })
+end, { desc = "Fuzzy find commands and complete on Enter" })
+----------------------------------------------------------------
+
+
+----------------------------------------------------------------- BROWSER
+-- Cargar la extensión del navegador de archivos
+require("telescope").load_extension("file_browser")
+-- Keymap para abrir el navegador de archivos
+vim.keymap.set("n", "<leader>,", function()
+    require("telescope").extensions.file_browser.file_browser {
+        path = "%:p:h", -- Abre en el directorio actual del archivo
+        cwd = vim.fn.expand("%:p:h"), -- Usa la ruta del archivo actual como raíz
+        hidden = true, -- Mostrar archivos ocultos
+        grouped = true, -- Agrupar carpetas primero
+        respect_gitignore = false, -- Ignorar .gitignore (puedes cambiar a true si prefieres respetarlo)
+    }
+end, { desc = "[,] File Browser" })

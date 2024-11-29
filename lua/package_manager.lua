@@ -28,6 +28,10 @@ require("packer").startup(function(use)
     use("windwp/nvim-autopairs")
     use("ahmedkhalf/project.nvim")
     use 'kdheepak/lazygit.nvim'
+    use {
+        "nvim-telescope/telescope-file-browser.nvim",
+        requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
+    }
     -- package manger
     use { "wbthomason/packer.nvim" }
 

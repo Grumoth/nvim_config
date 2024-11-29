@@ -37,3 +37,17 @@ vim.o.completeopt = "menuone,noselect"
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+
+-- -- Ajustar la posición de la ayuda de firma
+-- vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+--     border = "rounded", -- Opcional: para bordes redondeados
+--     focusable = false, -- La ventana no puede ser seleccionada
+--     close_events = { "CursorMoved", "InsertCharPre" }, -- Cierra la ventana al mover el cursor
+--     relative = "cursor", -- Relativo al cursor (puedes cambiar a 'editor' si prefieres fijo)
+--     row = 2, -- Mueve hacia abajo 2 filas (ajusta según prefieras)
+--     col = 0,
+-- })
+-- vim.keymap.set("i", "<M-s>", vim.lsp.buf.signature_help, { desc = "Show signature help" })
+--------------------------------------------------------------------------------------------------OPACIDAD POPUPS
+vim.o.winblend = 25 -- Nivel de transparencia (ajusta entre 0 y 100)
+vim.o.pumblend = 5 -- Transparencia para menús emergentes
