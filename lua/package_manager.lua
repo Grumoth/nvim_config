@@ -24,8 +24,9 @@ bootstrap_packer()
 -- for each package listed here, you can search on github for their
 -- name to know more
 require("packer").startup(function(use)
-    ---------------- yorl de m
+    ------------------------------------------------------------------- yorl de marras
     use("windwp/nvim-autopairs")
+    use("ahmedkhalf/project.nvim")
     -- package manger
     use { "wbthomason/packer.nvim" }
 

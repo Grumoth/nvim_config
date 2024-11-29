@@ -70,6 +70,9 @@ require("telescope").setup {
     pickers = {
         find_files = {
             find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
+            -- cwd = require("project_nvim").get_project_root(),
+            -- cwd = require("projec"),
+            -- cwd = require("project").get_project_root(),
         },
     },
     extensions = {
@@ -442,7 +445,7 @@ local setup_godot_dap = function()
     dap.configurations.gdscript = {
         {
             launch_game_instance = false,
-            launch_scene = false,
+            launch_scene = true,
             name = "Launch scene",
             project = "${workspaceFolder}",
             request = "launch",
@@ -453,6 +456,16 @@ end
 
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
+-- [[ Configure project.nvim ]]
+require("project_nvim").setup {
+    -- **Configurar los patrones para detectar la raíz del proyecto**
+    detection_methods = { "pattern" }, -- "pattern" o "lsp"
+    patterns = { ".git", "project.godot", ".svn", "Makefile", "package.json" },
+    -- Directorios donde buscar proyectos
+    silent_chdir = false, -- Cambiar el directorio de trabajo de Neovim automáticamente
+    ignore_lsp = {}, -- No ignorar ningún servidor LSP
+    -- Puedes añadir más configuraciones según tus necesidades
+}
 -- **Configuración de lsp_signature.nvim**
 require("lsp_signature").setup {
     bind = true, -- Usar los mapeos de <C-x> para cerrar la ventana
