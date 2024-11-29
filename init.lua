@@ -13,3 +13,10 @@ require("settings")
 require("autocmds")
 require("keymaps")
 require("package_manager_config")
+
+
+local custom_path = vim.fn.stdpath("config") .. "/lua/custom/"
+for _, file in ipairs(vim.fn.glob(custom_path .. "*.lua", true, true)) do
+    local module_name = file:match("lua/(.*)%.lua$"):gsub("/", ".")
+    require(module_name)
+end

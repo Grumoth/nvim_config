@@ -27,6 +27,7 @@ require("packer").startup(function(use)
     ------------------------------------------------------------------- yorl de marras
     use("windwp/nvim-autopairs")
     use("ahmedkhalf/project.nvim")
+    use 'kdheepak/lazygit.nvim'
     -- package manger
     use { "wbthomason/packer.nvim" }
 
@@ -82,6 +83,12 @@ require("packer").startup(function(use)
         "nvim-telescope/telescope-fzf-native.nvim",
         run = "make",
         cond = vim.fn.executable("make") == 1,
+
+        requires = {
+            'nvim-lua/plenary.nvim',
+            'nvim-telescope/telescope-fzf-native.nvim', -- Opcional: soporte FZF
+            run = 'make'
+    }
     }
 
     -- misc
