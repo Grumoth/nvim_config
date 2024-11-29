@@ -57,6 +57,9 @@ vim.cmd([[
 -- )
 
 
+
+
+
 --------------------------------------------------------------------------- ALT D PARA COMENTAR
 -- Modo normal: Alternar comentario en la línea actual
 vim.keymap.set("n", "<M-d>", function()
