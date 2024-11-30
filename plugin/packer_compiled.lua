@@ -84,6 +84,12 @@ _G.packer_plugins = {
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/LuaSnip",
     url = "https://github.com/L3MON4D3/LuaSnip"
   },
+  catppuccin = {
+    config = { "\27LJ\2\n”\1\0\0\3\0\a\0\v6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0B\0\2\0016\0\4\0009\0\5\0'\2\6\0B\0\2\1K\0\1\0\27colorscheme catppuccin\bcmd\bvim\1\0\2\27transparent_background\2\fflavour\nmocha\nsetup\15catppuccin\frequire\0" },
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/catppuccin",
+    url = "https://github.com/catppuccin/nvim"
+  },
   ["cmp-buffer"] = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/cmp-buffer",
@@ -104,6 +110,11 @@ _G.packer_plugins = {
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/cmp_luasnip",
     url = "https://github.com/saadparwaiz1/cmp_luasnip"
   },
+  dracula = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/dracula",
+    url = "https://github.com/dracula/vim"
+  },
   everforest = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/everforest",
@@ -113,6 +124,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
     url = "https://github.com/lewis6991/gitsigns.nvim"
+  },
+  gruvbox = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/gruvbox",
+    url = "https://github.com/gruvbox-community/gruvbox"
   },
   ["indent-blankline.nvim"] = {
     loaded = true,
@@ -148,6 +164,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/neodev.nvim",
     url = "https://github.com/folke/neodev.nvim"
+  },
+  ["nord.nvim"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/nord.nvim",
+    url = "https://github.com/shaunsingh/nord.nvim"
   },
   ["nui.nvim"] = {
     loaded = true,
@@ -227,6 +248,11 @@ _G.packer_plugins = {
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/promise-async",
     url = "https://github.com/kevinhwang91/promise-async"
   },
+  ["rose-pine"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/rose-pine",
+    url = "https://github.com/rose-pine/neovim"
+  },
   ["schemastore.nvim"] = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/schemastore.nvim",
@@ -249,6 +275,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/kike/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
+  },
+  ["tokyonight.nvim"] = {
+    loaded = true,
+    path = "/home/kike/.local/share/nvim/site/pack/packer/start/tokyonight.nvim",
+    url = "https://github.com/folke/tokyonight.nvim"
   },
   ["vim-fugitive"] = {
     loaded = true,
@@ -277,6 +308,10 @@ time([[Defining packer_plugins]], false)
 time([[Config for nvim-navbuddy]], true)
 try_loadstring("\27LJ\2\nc\0\0\4\0\6\0\t6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\4\0005\3\3\0=\3\5\2B\0\2\1K\0\1\0\blsp\1\0\1\blsp\0\1\0\1\16auto_attach\2\nsetup\18nvim-navbuddy\frequire\0", "config", "nvim-navbuddy")
 time([[Config for nvim-navbuddy]], false)
+-- Config for: catppuccin
+time([[Config for catppuccin]], true)
+try_loadstring("\27LJ\2\n”\1\0\0\3\0\a\0\v6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0B\0\2\0016\0\4\0009\0\5\0'\2\6\0B\0\2\1K\0\1\0\27colorscheme catppuccin\bcmd\bvim\1\0\2\27transparent_background\2\fflavour\nmocha\nsetup\15catppuccin\frequire\0", "config", "catppuccin")
+time([[Config for catppuccin]], false)
 -- Conditional loads
 time([[Conditional loading of telescope-fzf-native.nvim]], true)
   require("packer.load")({"telescope-fzf-native.nvim"}, {}, _G.packer_plugins)

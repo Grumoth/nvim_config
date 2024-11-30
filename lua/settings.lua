@@ -49,5 +49,5 @@ vim.g.maplocalleader = " "
 -- })
 -- vim.keymap.set("i", "<M-s>", vim.lsp.buf.signature_help, { desc = "Show signature help" })
 --------------------------------------------------------------------------------------------------OPACIDAD POPUPS
-vim.o.winblend = 25 -- Nivel de transparencia (ajusta entre 0 y 100)
-vim.o.pumblend = 5 -- Transparencia para menús emergentes
+-- vim.o.winblend = 85 -- Nivel de transparencia (ajusta entre 0 y 100)
+-- vim.o.pumblend = 85 -- Transparencia para menús emergentes

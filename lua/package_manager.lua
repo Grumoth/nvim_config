@@ -54,6 +54,8 @@ require("packer").startup(function(use)
             )
         end
     }
+
+    require("custom.themes").setup(use)
     use "b0o/schemastore.nvim"
     --##################################################################
     -- package manger

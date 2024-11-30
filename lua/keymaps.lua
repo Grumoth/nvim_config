@@ -101,3 +101,21 @@ vim.keymap.set("n", "<F5>", function()
     vim.cmd(":wa")
     require("godot.godot_launcher").launch_game()
 end, { desc = "Launch Godot in floating terminal" })
+---------------------------------------------------------------------------- SHOW PARAM INFO
+
+vim.keymap.set("i", "<C-k>", function()
+    vim.lsp.buf.signature_help()
+end, { desc = "Show function signature" })
+
+---------------------------------------------------------------------------- QUICK EDIT
+
+vim.keymap.set("n", "ge", function()
+    require("custom.quick_edit").quick_edit()
+end, { desc = "Quick edit function definition in floating window" })
+---------------------------------------------------------------------------- LAZYGIT
+
+vim.keymap.set("n", "<leader>g", function()
+    -- local Terminal = require("toggleterm.terminal").Terminal
+    -- local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
+    vim.cmd(":LazyGit")
+end, { desc = "Open LazyGit" })
