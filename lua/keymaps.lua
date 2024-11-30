@@ -55,6 +55,22 @@ vim.cmd([[
 --         require("telescope.builtin").project,
 --     { desc = "[S]Search th:is shite [P]rojekt" }
 -- )
+--------------------------------------------------------------------------- GUARDAR
+-- Ctrl+s para guardar el buffer actual
+vim.keymap.set("n", "<C-s>", ":w<CR>", { noremap = true, silent = true, desc = "Save current buffer" })
+vim.keymap.set("i", "<C-s>", "<Esc>:w<CR>a", { noremap = true, silent = true, desc = "Save current buffer in insert mode" })
+
+-- Ctrl+Shift+s para guardar todos los buffers
+vim.keymap.set("n", "<C-S-s>", ":wa<CR>", { noremap = true, silent = true, desc = "Save all buffers" })
+vim.keymap.set("i", "<C-S-s>", "<Esc>:wa<CR>a", { noremap = true, silent = true, desc = "Save all buffers in insert mode" })
+--------------------------------------------------------------------------- MOVER LINEAS PARRIBA O PABAIXO
+-- Mover líneas hacia abajo
+vim.keymap.set("n", "<M-j>", ":m .+1<CR>==", { noremap = true, silent = true, desc = "Move line down" })
+vim.keymap.set("n", "<M-k>", ":m .-2<CR>==", { noremap = true, silent = true, desc = "Move line up" })
+
+-- Mover bloques de código seleccionados hacia abajo o arriba en modo visual
+vim.keymap.set("v", "<M-j>", ":m '>+1<CR>gv=gv", { noremap = true, silent = true, desc = "Move block down" })
+vim.keymap.set("v", "<M-k>", ":m '<-2<CR>gv=gv", { noremap = true, silent = true, desc = "Move block up" })
 --------------------------------------------------------------------------- ALT D PARA COMENTAR
 -- Modo normal: Alternar comentario en la línea actual
 vim.keymap.set("n", "<M-d>", function()
@@ -67,3 +83,21 @@ vim.keymap.set("v", "<M-d>", function()
     vim.api.nvim_feedkeys(esc, 'x', false) -- Salir del modo visual
     require('Comment.api').toggle.linewise(vim.fn.visualmode()) -- Toggle linewise for selected block
 end, { desc = "Toggle comment on selected lines" })
+
+---------------------------------------------------------------------------    GODOT STUFF
+-- vim.keymap.set("n", "<F5>", function()
+--     print('fucking f5')
+--     require("lua.godot.godot_launcher")._test()
+-- end, { desc = "Run Godot game on second monitor" })
+-- vim.keymap.set(
+--     "n",
+--     "<F5>",
+--     require("godot.godot_launcher")._test()
+--     -- require("telescope.builtin").lsp_document_symbols,
+--     { desc = "[S]earch [S]ymbols" }
+-- )
+--
+vim.keymap.set("n", "<F5>", function()
+    vim.cmd(":wa")
+    require("godot.godot_launcher").launch_game()
+end, { desc = "Launch Godot in floating terminal" })

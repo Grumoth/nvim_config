@@ -13,7 +13,7 @@ require("settings")
 require("autocmds")
 require("keymaps")
 require("package_manager_config")
-
+-- require("lua.custom.godot")
 
 local custom_path = vim.fn.stdpath("config") .. "/lua/custom/"
 for _, file in ipairs(vim.fn.glob(custom_path .. "*.lua", true, true)) do

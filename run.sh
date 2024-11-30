@@ -28,3 +28,7 @@ if ! [ -e "$server_path" ]; then
 else
     open_file_in_server "$1" "$2"
 fi
+
+
+#-------------- TIP ENLACE SIMBOLICO A DEV BUILD
+# sudo ln -s ~/APPS/Godot_v4.4-dev5_linux.x86_64 /usr/local/bin/godot-dev

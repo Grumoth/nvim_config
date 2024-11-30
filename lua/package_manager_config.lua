@@ -252,7 +252,7 @@ local null_ls_on_attach = function(client, bufnr)
     end
 
     vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
-    vim.app.nvim_create_autocmd("BufWritePre", {
+    vim.api.nvim_create_autocmd("BufWritePre", {
         group = augroup,
         buffer = bufnr,
         callback = function()
