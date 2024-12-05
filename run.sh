@@ -17,7 +17,8 @@ start_server() {
 open_file_in_server() {
     # - escape stuff because nvim will not
     filename=$(printf %q "$1")
-    "$term_exec" -e "$nvim_exec" --server "$server_path" --remote-send "<C-\><C-n>:n $filename<CR>:call cursor($2)<CR>"
+    # "$term_exec" -e "$nvim_exec" --server "$server_path" --remote-send "<C-\><C-n>:n $filename<CR>:call cursor($2)<CR>"
+    "$nvim_exec" --server "$server_path" --remote-send "<C-\\><C-n>:vsp $filename<CR>:call cursor($2)<CR>"
 }
 
 if ! [ -e "$server_path" ]; then

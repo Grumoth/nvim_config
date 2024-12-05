@@ -1,12 +1,16 @@
 -- [[ Setting options ]]
 -- See `:help vim.o`
-
+-- Crear un grupo de resaltado personalizado para la winbar
+vim.api.nvim_set_hl(0, "WinBar", { bg = "#ffb361", fg ="#bb0000", bold = true })
+vim.api.nvim_set_hl(0, "WinBarNC", { bg = "#ffb361", fg = "#000000" }) -- Para ventanas no activas
+vim.o.winbar = "%#WinBar# %f %m" -- Usa el grupo de resaltado personalizado
+-- BACKSPACE QUE VUELVA PATRÁS
+vim.o.backspace = "indent,eol,start"
 -- Set highlight on search
 vim.o.hlsearch = false
 
 -- Make line numbers default
 vim.wo.number = true
-
 -- Enable mouse mode
 vim.o.mouse = "a"
 

@@ -115,7 +115,16 @@ end, { desc = "Quick edit function definition in floating window" })
 ---------------------------------------------------------------------------- LAZYGIT
 
 vim.keymap.set("n", "<leader>g", function()
-    -- local Terminal = require("toggleterm.terminal").Terminal
-    -- local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
     vim.cmd(":LazyGit")
 end, { desc = "Open LazyGit" })
+
+----------------------------------------------------------------------------- UNDO REDO PARA POBRES
+-- Mapeos para Undo y Redo
+vim.keymap.set("n", "<C-z>", "u", { noremap = true, silent = true, desc = "Undo" })       -- Ctrl+Z como Undo
+vim.keymap.set("n", "<C-S-z>", "<C-r>", { noremap = true, silent = true, desc = "Redo" }) -- Ctrl+Shift+Z como Redo
+
+----------------------------------------------------------------------------- TOGGLE MAXIMIZE
+vim.keymap.set({ "n", "v", "i" }, "<C-leader>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-Space>", ":WindowsMaximize<CR>", { noremap = true, silent = true, desc = "Maximize current window" })
+----------------------------------------------------------------------------- CTRL BACKSPACE
+vim.keymap.set("i", "<C-BS>", "<C-w>", { noremap = true, silent = true, desc = "Delete word backward in insert mode" })

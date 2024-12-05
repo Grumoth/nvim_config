@@ -26,6 +26,50 @@ bootstrap_packer()
 require("packer").startup(function(use)
     --##############################################################
     ------------------------------------------------------------------- yorl de marras
+    use { 
+        "nvim-lualine/lualine.nvim", 
+        requires = "nvim-tree/nvim-web-devicons",
+        config = function()
+            require("lualine").setup({
+                options = {
+                    theme = "everforest",
+                    section_separators = '',
+                    component_separators = '',
+                },
+                sections = {
+                    lualine_c = { "filename" }, -- Muestra el nombre del archivo en el centro
+                },
+            })
+        end,
+    }
+    -- use { 
+    --     "akinsho/bufferline.nvim", 
+    --     requires = "nvim-tree/nvim-web-devicons", 
+    --     config = function()
+    --         require("bufferline").setup({
+    --             options = {
+    --                 diagnostics = "nvim_lsp", -- Muestra errores y advertencias de LSP
+    --                 separator_style = "slant", -- Estilo visual de separación
+    --                 show_close_icon = false,  -- Oculta el ícono de cerrar
+    --                 offsets = {
+    --                     { filetype = "NvimTree", text = "File Explorer", text_align = "center" }
+    --                 },
+    --             },
+    --         })
+    --     end,
+    -- }
+    use { "anuvyklack/windows.nvim",
+        requires = {
+            "anuvyklack/middleclass",
+            "anuvyklack/animation.nvim"
+        },
+        config = function()
+            vim.o.winwidth = 10
+            vim.o.winminwidth = 10
+            vim.o.equalalways = false
+            require('windows').setup()
+        end
+    }
     use("windwp/nvim-autopairs")
     use("ahmedkhalf/project.nvim")
     use 'kdheepak/lazygit.nvim'
@@ -102,7 +146,7 @@ require("packer").startup(function(use)
     use("lukas-reineke/indent-blankline.nvim")
     -- use { "lukas-reineke/indent-blankline.nvim" } -- add indentation guides even on blank lines
     use { "numToStr/Comment.nvim" } -- "gc" to comment visual regions/lines
-    use { "nvim-lualine/lualine.nvim" }
+    -- use { "nvim-lualine/lualine.nvim" }
     use { "sainnhe/everforest" }
     use { "tpope/vim-sleuth" } -- detect tabstop and shiftwidth automatically
 

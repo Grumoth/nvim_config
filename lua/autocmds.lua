@@ -29,3 +29,25 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     group = highlight_augroup,
     pattern = "*",
 })
+-- -- CONTROLAR LA JUGADA DE SPLITEAR AUTOMÁTICAMENTE EN V O EN H
+-- vim.api.nvim_create_autocmd("BufReadPost", {
+--     pattern = "*.gd", -- Ajusta el patrón si necesitas otros archivos
+--     callback = function()
+--         local current_win_count = #vim.api.nvim_tabpage_list_wins(0) -- Número de ventanas actuales
+
+--         if current_win_count == 1 then
+--             -- Si solo hay una ventana, divide verticalmente
+--             vim.cmd("vsp")
+--         elseif current_win_count == 2 then
+--             -- Si ya hay dos ventanas, divide horizontalmente
+--             vim.cmd("sp")
+--         else
+--             -- Si hay más de dos ventanas, enfoca la última
+--             vim.cmd("wincmd p")
+--         end
+
+--         -- Opcional: Ajusta el tamaño del nuevo pane
+--         vim.cmd("resize 20") -- Ajusta el tamaño vertical
+--     end,
+--     desc = "Dynamic pane splitting for GDScript files",
+-- })
