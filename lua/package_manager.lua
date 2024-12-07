@@ -58,6 +58,7 @@ require("packer").startup(function(use)
     --         })
     --     end,
     -- }
+    -- use { "simrat39/rust-tools.nvim" }
     use { "anuvyklack/windows.nvim",
         requires = {
             "anuvyklack/middleclass",
@@ -70,6 +71,13 @@ require("packer").startup(function(use)
             require('windows').setup()
         end
     }
+    use {
+       "folke/trouble.nvim",
+        requires = "nvim-tree/nvim-web-devicons",
+        config = function()
+        require("trouble").setup {}
+    end,
+}
     use("windwp/nvim-autopairs")
     use("ahmedkhalf/project.nvim")
     use 'kdheepak/lazygit.nvim'

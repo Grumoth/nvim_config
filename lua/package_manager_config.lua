@@ -412,3 +412,19 @@ require("luasnip.loaders.from_lua").load {
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 setup_godot_dap()
+
+
+-- ---------------------------- INLAYS RUST
+-- require("rust-tools").setup({
+--     server = {
+--         on_attach = function(_, bufnr)
+--             -- Mapea <leader>ih para alternar hints
+--             vim.keymap.set("n", "<leader>ih", require("rust-tools.inlay_hints").toggle_inlay_hints, { buffer = bufnr })
+--         end,
+--     },
+--     tools = {
+--         inlay_hints = {
+--             auto = true, -- Desactiva inlay hints automáticos
+--         },
+--     },
+-- })

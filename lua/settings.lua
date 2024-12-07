@@ -1,5 +1,9 @@
 -- [[ Setting options ]]
 -- See `:help vim.o`
+-- AUTO INDENT
+vim.o.autoindent = true
+vim.o.smartindent = true
+vim.cmd("filetype plugin indent on")
 -- Crear un grupo de resaltado personalizado para la winbar
 vim.api.nvim_set_hl(0, "WinBar", { bg = "#ffb361", fg ="#bb0000", bold = true })
 vim.api.nvim_set_hl(0, "WinBarNC", { bg = "#ffb361", fg = "#000000" }) -- Para ventanas no activas

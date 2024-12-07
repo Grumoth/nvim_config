@@ -96,11 +96,29 @@ end, { desc = "Toggle comment on selected lines" })
 --     -- require("telescope.builtin").lsp_document_symbols,
 --     { desc = "[S]earch [S]ymbols" }
 -- )
---
+-------------------------------------------------------------------------- F5
 vim.keymap.set("n", "<F5>", function()
-    vim.cmd(":wa")
-    require("godot.godot_launcher").launch_game()
-end, { desc = "Launch Godot in floating terminal" })
+    local cwd = vim.fn.getcwd()
+
+    -- Detectar proyecto de Godot
+    if vim.fn.filereadable(cwd .. "/project.godot") == 1 then
+        require("godot_launcher").launch_game()
+
+    -- Detectar proyecto de Rust
+    elseif vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
+        local wezterm_cmd = string.format(
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cargo run'"
+        )
+        local result = os.execute(wezterm_cmd)
+        if result == 0 then
+            vim.notify("Rust project started", vim.log.levels.INFO)
+        else
+            vim.notify("Failed to start Rust project", vim.log.levels.ERROR)
+        end
+    else
+        vim.notify("No recognizable project detected", vim.log.levels.WARN)
+    end
+end, { noremap = true, silent = true, desc = "Run project based on type" })
 ---------------------------------------------------------------------------- SHOW PARAM INFO
 
 vim.keymap.set("i", "<C-k>", function()
@@ -128,3 +146,5 @@ vim.keymap.set({ "n", "v", "i" }, "<C-leader>", "<Nop>", { noremap = true, silen
 vim.keymap.set("n", "<C-Space>", ":WindowsMaximize<CR>", { noremap = true, silent = true, desc = "Maximize current window" })
 ----------------------------------------------------------------------------- CTRL BACKSPACE
 vim.keymap.set("i", "<C-BS>", "<C-w>", { noremap = true, silent = true, desc = "Delete word backward in insert mode" })
+----------------- jump end
+vim.keymap.set("i", "<S-Right>", "<C-o>$", { noremap = true, silent = true, desc = "Move to end of line in insert mode" })
