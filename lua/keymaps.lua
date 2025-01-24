@@ -125,8 +125,19 @@ end, { noremap = true, silent = true, desc = "Run project based on type" })
 --     require("godot.godot_launcher").launch_game_with_dap()
 -- end, { noremap = true, silent = true, desc = "Run Godot with DAP on second monitor" })
 
+vim.keymap.set("n", "<F6>", function()
+    require("dap").continue()
+end, { desc = "Start Godot Debug with Console" })
 
+-- Opcional: un atajo para abrir/cerrar la UI manualmente
+vim.keymap.set("n", "<leader>du", function()
+    require("dapui").toggle()
+end, { desc = "Toggle DAP UI" })
 
+local godotlauncher = require("godot.godot_launcher")
+
+-- Mapeo para detener el juego y cerrar la UI
+vim.keymap.set("n", "<C-c>", godotlauncher.stop_game, { noremap = true, silent = true, desc = "Stop game and hide DAP UI" })
 ---------------------------------------------------------------------------- SHOW PARAM INFO
 
 vim.keymap.set("i", "<C-k>", function()

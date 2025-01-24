@@ -138,6 +138,8 @@ require("packer").startup(function(use)
 
     -- dap: debug adapter protocol (debugger)
     use { "mfussenegger/nvim-dap" }
+    use { "rcarriga/nvim-dap-ui" }
+    use { "nvim-neotest/nvim-nio"} -- Dependencia requerida por nvim-dap-ui
 
     -- nvim-cmp: autocompletion
     use { "hrsh7th/nvim-cmp" }

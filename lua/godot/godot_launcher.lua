@@ -27,7 +27,16 @@ M.launch_game = function()
         print('nel')
     end
 end
+M.stop_game = function()
+    local dap = require("dap")
+    local dapui = require("dapui")
 
+    -- Terminar la sesión DAP
+    dap.terminate()
+    dapui.close() -- Esconde automáticamente la UI
+
+    vim.notify("Game and DAP session stopped", vim.log.levels.INFO)
+end
 -- Función para arrancar Godot en modo DAP
 -- -- Función para ejecutar Godot en modo DAP y mostrar la consola en WezTerm
 -- M.launch_game_with_dap = function()
