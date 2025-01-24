@@ -52,20 +52,82 @@ require("telescope").setup {
 
 -- Enable telescope fzf native, if installed
 pcall(require("telescope").load_extension, "fzf")
+----------------------------------------------------------------- BROWSER
+-- Cargar la extensión del navegador de archivos
+require("telescope").load_extension("file_browser")
 
--- See `:help telescope.builtin`
+local function search_project_files()
+    local cwd = vim.fn.getcwd()
+    local is_godot_project = vim.fn.filereadable(cwd .. "/project.godot") == 1
+    local is_rust_project = vim.fn.filereadable(cwd .. "/Cargo.toml") == 1
+
+    if is_godot_project then
+        require("telescope.builtin").find_files {
+            prompt_title = "Search .gd files in Project",
+            find_command = {
+                "rg",
+                "--files",
+                "--hidden",
+                "--glob",
+                "*.gd",
+                "--glob",
+                "!.git/*",
+            },
+        }
+    elseif is_rust_project then
+        require("telescope.builtin").find_files {
+            prompt_title = "Search .rs files in Project",
+            find_command = {
+                "rg",
+                "--files",
+                "--hidden",
+                "--glob",
+                "*.rs",
+                "--glob",
+                "!.git/*",
+            },
+        }
+    else
+        require("telescope.builtin").find_files {
+            prompt_title = "Search Files in Project",
+            find_command = {
+                "rg",
+                "--files",
+                "--hidden",
+                "--glob",
+                "!.git/*",
+            },
+        }
+    end
+end
+
+vim.keymap.set("n", "<leader><space>", search_project_files, { desc = "[.] Search project files" })
+
+-- Keymap para abrir el navegador de archivos
+vim.keymap.set("n", "<leader>,", function()
+    require("telescope").extensions.file_browser.file_browser {
+        path = vim.fn.expand("%:p:h"), -- Usa la ruta del archivo actual como raíz
+        cwd = vim.fn.expand("%:p:h"), -- Configura el directorio de trabajo
+        hidden = true, -- Mostrar archivos oculto
+        -- follow = true, -- Seguir enlaces simbólicos
+        grouped = true, -- Agrupar carpetas primero
+        respect_gitignore = false, -- Ignorar .gitignore
+    }
+end, { desc = "[,] File Browser" })
+
+
 vim.keymap.set(
-    "n",
-    "<leader>?",
-    require("telescope.builtin").oldfiles,
+    "n","<leader>?",require("telescope.builtin").oldfiles,
     { desc = "[?] Find recently opened files" }
 )
-vim.keymap.set(
-    "n",
-    "<leader><space>",
+vim.keymap.set("n","<leader>.",
     require("telescope.builtin").buffers,
     { desc = "[ ] Find existing buffers" }
 )
+
+
+
+
 vim.keymap.set("n", "<leader>/", function()
     -- You can pass additional configuration to telescope to change theme, layout, etc.
     require("telescope.builtin").current_buffer_fuzzy_find(
@@ -107,20 +169,6 @@ vim.keymap.set(
     { desc = "[S]earch [D]iagnostics" }
 )
 
-vim.keymap.set("n", "<leader>.", function()
-    require("telescope.builtin").find_files {
-        prompt_title = "Search .gd files in Project",
-        find_command = {
-            "rg",
-            "--files",
-            "--hidden",
-            "--glob",
-            "*.gd",
-            "--glob",
-            "!.git/*",
-        },
-    }
-end, { desc = "[.] Search .gd files in project" })
 
 
 ------------------------------------------------------------------------------
@@ -153,22 +201,6 @@ vim.keymap.set("n", "<M-x>", function()
 end, { desc = "Fuzzy find commands and complete on Enter" })
 ----------------------------------------------------------------
 
-
------------------------------------------------------------------ BROWSER
--- Cargar la extensión del navegador de archivos
-require("telescope").load_extension("file_browser")
-
--- Keymap para abrir el navegador de archivos
-vim.keymap.set("n", "<leader>,", function()
-    require("telescope").extensions.file_browser.file_browser {
-        path = vim.fn.expand("%:p:h"), -- Usa la ruta del archivo actual como raíz
-        cwd = vim.fn.expand("%:p:h"), -- Configura el directorio de trabajo
-        hidden = true, -- Mostrar archivos oculto
-        -- follow = true, -- Seguir enlaces simbólicos
-        grouped = true, -- Agrupar carpetas primero
-        respect_gitignore = false, -- Ignorar .gitignore
-    }
-end, { desc = "[,] File Browser" })
 
 
 --------------------------------------------------------------------- JSON  KEYS

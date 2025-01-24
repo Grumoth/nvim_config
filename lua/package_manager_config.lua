@@ -220,7 +220,7 @@ local servers = {
     -- clangd = {},
     -- gopls = {},
     -- pyright = {},
-    rust_analyzer = {},
+    -- rust_analyzer = {},
     -- tsserver = {},
 
     gdscript = {},
@@ -304,6 +304,7 @@ for server, opts in pairs(servers) do
         capabilities = capabilities,
         on_attach = on_attach,
         settings = opts,
+    
     }
 end
 
@@ -360,7 +361,29 @@ cmp.setup.filetype("gd", {
         { name = "path" },
     },
 })
+-- local setup_godot_dap = function()
+--     local dap = require("dap")
 
+--     dap.adapters.godot = {
+--         type = "server",
+--         host = "127.0.0.1",
+--         port = 6006, -- Puerto por defecto para el debugger de Godot
+--     }
+
+--     dap.configurations.gdscript = {
+--         {
+--             type = "godot",
+--             request = "launch",
+--             name = "Launch Godot Game with DAP",
+--             project = "${workspaceFolder}", -- Ruta al proyecto
+--             launch_options = {
+--                 executable = "/home/kike/APPS/Godot_v4.4-dev6_linux.x86_64", -- Ruta al ejecutable de Godot
+--                 args = { "--remote-debug", "127.0.0.1:6006" }, -- Habilitar el modo DAP
+--             },
+--         },
+--     }
+-- end
+-- OLD DAP
 local setup_godot_dap = function()
     local dap = require("dap")
 
@@ -428,3 +451,81 @@ setup_godot_dap()
 --         },
 --     },
 -- })
+vim.g.rustaceanvim = {
+  server = {
+    settings = {
+      ["rust-analyzer"] = {
+        inlayHints = {
+          bindingModeHints = {
+            enable = false,
+          },
+          chainingHints = {
+            enable = true,
+          },
+          closingBraceHints = {
+            enable = true,
+            minLines = 25,
+          },
+          closureReturnTypeHints = {
+            enable = "never",
+          },
+          lifetimeElisionHints = {
+            enable = "never",
+            useParameterNames = false,
+          },
+          maxLength = 25,
+          parameterHints = {
+            enable = true,
+          },
+          reborrowHints = {
+            enable = "never",
+          },
+          renderColons = true,
+          typeHints = {
+            enable = true,
+            hideClosureInitialization = false,
+            hideNamedConstructor = false,
+          },
+        },
+      },
+    },
+  },
+}
+require("lspconfig").rust_analyzer.setup({
+  settings = {
+    ["rust-analyzer"] = {
+      inlayHints = {
+        bindingModeHints = {
+          enable = false,
+        },
+        chainingHints = {
+          enable = true,
+        },
+        closingBraceHints = {
+          enable = true,
+          minLines = 25,
+        },
+        closureReturnTypeHints = {
+          enable = "never",
+        },
+        lifetimeElisionHints = {
+          enable = "never",
+          useParameterNames = false,
+        },
+        maxLength = 25,
+        parameterHints = {
+          enable = true,
+        },
+        reborrowHints = {
+          enable = "never",
+        },
+        renderColons = true,
+        typeHints = {
+          enable = true,
+          hideClosureInitialization = false,
+          hideNamedConstructor = false,
+        },
+      },
+    }
+  }
+})

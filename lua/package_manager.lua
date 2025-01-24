@@ -59,6 +59,22 @@ require("packer").startup(function(use)
     --     end,
     -- }
     -- use { "simrat39/rust-tools.nvim" }
+    -- use {
+    --     'mrcjkb/rustaceanvim',
+    --     requires = { 'nvim-lua/plenary.nvim' },
+    --     config = function()
+    --         -- Configuración adicional si es necesaria
+    --     end
+    -- }
+    use {
+        "lvimuser/lsp-inlayhints.nvim",
+        config = function()
+            require("lsp-inlayhints").setup({
+                commands = { enable = true },
+                autocmd = {enable = true}
+            })
+        end
+    }
     use { "anuvyklack/windows.nvim",
         requires = {
             "anuvyklack/middleclass",

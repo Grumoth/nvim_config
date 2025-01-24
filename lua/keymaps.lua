@@ -97,13 +97,13 @@ end, { desc = "Toggle comment on selected lines" })
 --     { desc = "[S]earch [S]ymbols" }
 -- )
 -------------------------------------------------------------------------- F5
-vim.keymap.set("n", "<F5>", function()
+vim.keymap.set({ "n", "v", "i" }, "<F5>", function()
     local cwd = vim.fn.getcwd()
 
     -- Detectar proyecto de Godot
     if vim.fn.filereadable(cwd .. "/project.godot") == 1 then
-        require("godot_launcher").launch_game()
-
+        -- require("godot_launcher").launch_game()
+        require("godot.godot_launcher").launch_game()
     -- Detectar proyecto de Rust
     elseif vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
         local wezterm_cmd = string.format(
@@ -119,6 +119,14 @@ vim.keymap.set("n", "<F5>", function()
         vim.notify("No recognizable project detected", vim.log.levels.WARN)
     end
 end, { noremap = true, silent = true, desc = "Run project based on type" })
+-------------------------------------------------------------------------- F6
+-- -- Ejecutar Godot con DAP en una segunda pantalla
+-- vim.keymap.set({ "n", "v", "i" }, "<F6>", function()
+--     require("godot.godot_launcher").launch_game_with_dap()
+-- end, { noremap = true, silent = true, desc = "Run Godot with DAP on second monitor" })
+
+
+
 ---------------------------------------------------------------------------- SHOW PARAM INFO
 
 vim.keymap.set("i", "<C-k>", function()
@@ -148,3 +156,12 @@ vim.keymap.set("n", "<C-Space>", ":WindowsMaximize<CR>", { noremap = true, silen
 vim.keymap.set("i", "<C-BS>", "<C-w>", { noremap = true, silent = true, desc = "Delete word backward in insert mode" })
 ----------------- jump end
 vim.keymap.set("i", "<S-Right>", "<C-o>$", { noremap = true, silent = true, desc = "Move to end of line in insert mode" })
+
+
+
+
+-- -- Alternar inlay hints
+-- vim.keymap.set("n", "<leader>ih", ":lua require('lsp-inlayhints').toggle()<CR>", { noremap = true, silent = true, desc = "Toggle inlay hints" })
+
+-- -- Formatear con Rust Analyzer
+-- vim.keymap.set("n", "<leader>rf", ":lua vim.lsp.buf.format()<CR>", { noremap = true, silent = true, desc = "Format Rust file" })
