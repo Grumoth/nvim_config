@@ -129,6 +129,17 @@ vim.keymap.set("n", "<F6>", function()
     require("dap").continue()
 end, { desc = "Start Godot Debug with Console" })
 
+-- init.lua or keymaps.lua
+vim.api.nvim_set_keymap('n', '<leader>dd', '<cmd>lua require("dapui").toggle()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>dc', '<cmd>lua require("dap").continue()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>db', '<cmd>lua require("dap").toggle_breakpoint()<CR>', { noremap = true, silent = true })
+
+
+
+
+
+
+
 -- Opcional: un atajo para abrir/cerrar la UI manualmente
 vim.keymap.set("n", "<leader>du", function()
     require("dapui").toggle()
@@ -146,9 +157,9 @@ end, { desc = "Show function signature" })
 
 ---------------------------------------------------------------------------- QUICK EDIT
 
-vim.keymap.set("n", "ge", function()
-    require("custom.quick_edit").quick_edit()
-end, { desc = "Quick edit function definition in floating window" })
+-- vim.keymap.set("n", "ge", function()
+--     require("custom.quick_edit").quick_edit()
+-- end, { desc = "Quick edit function definition in floating window" })
 ---------------------------------------------------------------------------- LAZYGIT
 
 vim.keymap.set("n", "<leader>g", function()

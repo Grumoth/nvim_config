@@ -1,95 +1,117 @@
+-- lua/custom/dap_config.lua
+
+local M = {}
+
+-- Cargar plugins necesarios
 local dap = require("dap")
-
--- Configurar el adaptador de Godot
-dap.adapters.godot = {
-    type = "server",
-    host = "127.0.0.1",
-    port = 6006, -- Puerto predeterminado para Godot DAP
-}
-
--- Configurar el debugger para GDScript
-dap.configurations.gdscript = {
-    {
-        type = "godot",
-        request = "launch",
-        name = "Launch Godot DAP",
-        project = "${workspaceFolder}", -- Directorio del proyecto actual
-    },
-}
-
 local dapui = require("dapui")
 
-dapui.setup({
-    layouts = {
+-- Configuración de nvim-dap para Godot
+M.setup_dap = function()
+    -- Adaptador para Godot
+    dap.adapters.godot = {
+        type = "server",
+        host = "127.0.0.1",
+        port = 6006,
+    }
+
+    -- Configuración de lanzamiento para Godot
+    dap.configurations.gdscript = {
         {
-            elements = {
-                "scopes",
-                "breakpoints",
-                "stacks",
-                "watches",
-            },
-            size = 40, -- Pane derecho
-            position = "right",
+            type = "godot",
+            request = "launch",
+            name = "Launch Godot",
+            project = "${workspaceFolder}",
+            port = 6006,
         },
-        {
-            elements = {
-                "repl", -- Consola interactiva
-                "console", -- Consola de salida
+    }
+end
+
+-- Configuración de nvim-dap-ui
+M.setup_dapui = function()
+    dapui.setup({
+        layouts = {
+            {
+                elements = {
+                    { id = "scopes", size = 0.15 },
+                    { id = "breakpoints", size = 0.15 },
+                    { id = "stacks", size = 0.15 },
+                    { id = "watches", size = 0.55 },
+                },
+                position = "bottom",
+                size = 5,
             },
-            size = 10, -- Pane inferior
-            position = "bottom",
+            {
+                elements = {
+                    { id = "repl", size = 0.9 },
+                    { id = "console", size = 0.1 },
+                },
+                position = "right",
+                size = 35,
+            },
         },
-    },
-    controls = {
-        element = "repl", -- Asegurarse de que los controles interactúen con el REPL
-    },
-    floating = {
-        border = "rounded",
-    },
-    render = {
-        max_type_length = nil, -- No limitar la longitud de los tipos en la consola
-    },
-})
-
--- Activar auto-scroll en la consola
--- Configurar autoscroll
-vim.api.nvim_create_autocmd("User", {
-    pattern = "DapUiEventUpdate", -- Evento que dispara una actualización de la consola
-    callback = function()
-        vim.cmd("normal! G") -- Ir al final de la consola
-    end,
-})
--- Listeners para abrir y cerrar automáticamente la UI
-dap.listeners.after.event_initialized["dapui_config"] = function()
-    dapui.open()
+    })
 end
 
-dap.listeners.before.event_terminated["dapui_config"] = function()
-    dapui.close()
+-- Configuración de listeners para abrir/cerrar dapui automáticamente
+M.setup_listeners = function()
+    -- Abrir dapui automáticamente al iniciar la depuración
+    dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+
+        -- Configurar autoscroll y pruebas después de abrir dapui
+        M.enable_repl_autoscroll()
+        M.test_repl()
+    end
+
+    -- Cerrar dapui automáticamente al terminar la depuración
+    dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+    end
+
+    -- Cerrar dapui automáticamente al salir de la depuración
+    dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+    end
 end
 
-dap.listeners.before.event_exited["dapui_config"] = function()
-    dapui.close()
+-- Habilitar autoscroll en el REPL
+M.enable_repl_autoscroll = function()
+    -- Obtener el buffer del REPL
+    local repl = dapui.elements.repl.terminal
+    if not repl then
+        print("REPL no encontrado. Asegúrate de que dapui esté abierto.")  -- Mensaje de depuración
+        return
+    end
+
+    print("Configurando autoscroll para el REPL...")  -- Mensaje de depuración
+
+    -- Configurar autoscroll para el buffer del REPL
+    vim.api.nvim_create_autocmd("TermEnter", {
+        buffer = repl.bufnr,
+        callback = function()
+            print("Desplazando REPL hacia abajo...")  -- Mensaje de depuración
+            vim.api.nvim_command("normal! G")
+        end,
+    })
 end
 
-
-local function strip_bbcode(message)
-    -- Elimina códigos BBCode comunes
-    return message
-        :gsub("%[color=#[0-9a-fA-F]+%]", "") -- Quitar etiquetas de color
-        :gsub("%[b%]", "")                   -- Quitar etiquetas de negrita
-        :gsub("%[/b%]", "")                  -- Quitar cierre de negrita
-        :gsub("%[/color%]", "")              -- Quitar cierre de color
+-- Función para probar la modificación del REPL
+M.test_repl = function()
+    local repl = dapui.elements.repl.terminal
+    if repl then
+        print("Escribiendo en el REPL...")  -- Mensaje de depuración
+        vim.api.nvim_chan_send(repl.bufnr, "print('Hola desde el REPL')\n")
+    else
+        print("REPL no encontrado. Asegúrate de que dapui esté abierto.")  -- Mensaje de depuración
+    end
 end
 
--- Interceptar mensajes para procesar BBCode
-vim.api.nvim_create_autocmd("User", {
-    pattern = "DapUiEventUpdate",
-    callback = function()
-        local lines = vim.fn.getbufline(vim.fn.bufnr("%"), 1, "$")
-        for i, line in ipairs(lines) do
-            lines[i] = strip_bbcode(line)
-        end
-        vim.fn.setbufline(vim.fn.bufnr("%"), 1, lines)
-    end,
-})
+-- Inicializar toda la configuración de DAP
+M.setup = function()
+    M.setup_dap()               -- Configurar nvim-dap
+    M.setup_dapui()             -- Configurar nvim-dap-ui
+    M.setup_listeners()         -- Configurar listeners
+end
+
+return M

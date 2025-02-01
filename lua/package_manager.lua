@@ -137,10 +137,34 @@ require("packer").startup(function(use)
     use { "jose-elias-alvarez/null-ls.nvim" }
 
     -- dap: debug adapter protocol (debugger)
-    use { "mfussenegger/nvim-dap" }
-    use { "rcarriga/nvim-dap-ui" }
-    use { "nvim-neotest/nvim-nio"} -- Dependencia requerida por nvim-dap-ui
+-- packer.nvim configuration
 
+use {
+    "nvim-neotest/nvim-nio",  -- Agrega nvim-nio como dependencia
+}
+use {
+    "mfussenegger/nvim-dap",
+    -- config = function()
+    --     require("custom.dap_config").setup()
+    -- end
+}
+use {
+    "rcarriga/nvim-dap-ui",
+    requires = {
+        "mfussenegger/nvim-dap",
+        "nvim-neotest/nvim-nio",  -- Dependencia de nvim-dap-ui
+    },
+}
+use {
+    "theHamsta/nvim-dap-virtual-text",
+    requires = "mfussenegger/nvim-dap",
+    config = function()
+        require("nvim-dap-virtual-text").setup({
+            enabled = true,
+            show_logs = true,
+        })
+    end
+}
     -- nvim-cmp: autocompletion
     use { "hrsh7th/nvim-cmp" }
     use { "hrsh7th/cmp-nvim-lsp" }
