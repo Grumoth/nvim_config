@@ -97,28 +97,104 @@ end, { desc = "Toggle comment on selected lines" })
 --     { desc = "[S]earch [S]ymbols" }
 -- )
 -------------------------------------------------------------------------- F5
-vim.keymap.set({ "n", "v", "i" }, "<F5>", function()
-    local cwd = vim.fn.getcwd()
 
-    -- Detectar proyecto de Godot
-    if vim.fn.filereadable(cwd .. "/project.godot") == 1 then
-        -- require("godot_launcher").launch_game()
+-- Función para ejecutar un proyecto de Godot normal (sin tocar Rust)
+local function run_godot_project()
+    local cwd = vim.fn.getcwd()
+    local godot_project = cwd .. "/project.godot"
+
+    if vim.fn.filereadable(godot_project) == 1 then
+        vim.notify("Ejecutando Godot...", vim.log.levels.INFO)
         require("godot.godot_launcher").launch_game()
-    -- Detectar proyecto de Rust
-    elseif vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
+    else
+        vim.notify("No se encontró un proyecto de Godot.", vim.log.levels.WARN)
+    end
+end
+
+local function run_godot_with_rust()
+    local cwd = vim.fn.getcwd() -- Directorio actual
+    local file_path = vim.fn.expand("%:p") -- Ruta completa del archivo actual
+
+    -- Si el cwd ya está dentro de `rust/`, subimos un nivel para obtener la raíz del proyecto
+    if cwd:match("/rust$") then
+        cwd = cwd:gsub("/rust$", "") -- Elimina "/rust" al final para obtener la carpeta raíz
+    end
+
+    local rust_path = cwd .. "/rust"
+    local cargo_toml = rust_path .. "/Cargo.toml"
+    local godot_project = cwd .. "/godot/project.godot"
+
+    -- Si estamos editando un archivo en rust/src/, compilar Rust en un pane de WezTerm
+    if file_path:match(rust_path .. "/src/") and vim.fn.filereadable(cargo_toml) == 1 and vim.fn.filereadable(godot_project) == 1 then
+        vim.notify("Compilando Rust en WezTerm...", vim.log.levels.INFO)
+
         local wezterm_cmd = string.format(
-            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cargo run'"
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && cargo build && godot --path %s; exit'",
+            rust_path, cwd .. "/godot"
         )
+
         local result = os.execute(wezterm_cmd)
+
         if result == 0 then
-            vim.notify("Rust project started", vim.log.levels.INFO)
+            vim.notify("Compilación y ejecución lanzadas en WezTerm.", vim.log.levels.INFO)
         else
-            vim.notify("Failed to start Rust project", vim.log.levels.ERROR)
+            vim.notify("Error al lanzar WezTerm.", vim.log.levels.ERROR)
         end
     else
-        vim.notify("No recognizable project detected", vim.log.levels.WARN)
+        vim.notify("No se detectó un proyecto válido de Rust+Godot.", vim.log.levels.WARN)
     end
-end, { noremap = true, silent = true, desc = "Run project based on type" })
+end
+
+
+
+-- Mapeo de <F5>: Ejecuta Godot normal o Rust+Godot según el contexto
+vim.keymap.set({ "n", "v", "i" }, "<F5>", function()
+    local file_path = vim.fn.expand("%:p") -- Ruta completa del archivo actual
+
+    if file_path:match("/rust/src/") then
+        run_godot_with_rust() -- Si estás en un archivo Rust, ejecuta la función de Rust
+    else
+        run_godot_project() -- Si no, ejecuta Godot normal
+    end
+end, { noremap = true, silent = true, desc = "Run Godot or Rust+Godot depending on context" })
+
+
+---------------------------------------------------- F4 RUST BUILD
+
+vim.keymap.set({ "n", "v", "i" }, "<F4>", function()
+    local cwd = vim.fn.getcwd()
+    local file_path = vim.fn.expand("%:p")
+
+    -- Si estamos dentro de `rust/`, subimos un nivel para obtener la raíz del proyecto
+    if cwd:match("/rust$") then
+        cwd = cwd:gsub("/rust$", "")
+    end
+
+    local rust_path = cwd .. "/rust"
+    local cargo_toml = rust_path .. "/Cargo.toml"
+
+    if file_path:match(rust_path .. "/src/") and vim.fn.filereadable(cargo_toml) == 1 then
+        vim.notify("Compilando Rust...", vim.log.levels.INFO)
+
+        -- Comando que deja `exit` preescrito en la terminal
+        local wezterm_cmd = string.format(
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && cargo build > build_log.txt 2>&1; " ..
+            "if grep -qE \"(error:|warning:)\" build_log.txt; then cat build_log.txt; echo \"\\nPresiona ENTER para cerrar...\"; read; exit; else rm build_log.txt; exit; fi'",
+            rust_path
+        )
+
+        local result = os.execute(wezterm_cmd)
+
+        if result == 0 then
+            vim.notify("Compilación sin errores ni warnings. Pane cerrado.", vim.log.levels.INFO)
+        else
+            vim.notify("Errores o warnings detectados. WezTerm se mantiene abierto (presiona ENTER para cerrar).", vim.log.levels.WARN)
+        end
+    else
+        vim.notify("No se detectó un proyecto válido de Rust.", vim.log.levels.WARN)
+    end
+end, { noremap = true, silent = true, desc = "Build Rust project" })
+
 -------------------------------------------------------------------------- F6
 -- -- Ejecutar Godot con DAP en una segunda pantalla
 -- vim.keymap.set({ "n", "v", "i" }, "<F6>", function()
