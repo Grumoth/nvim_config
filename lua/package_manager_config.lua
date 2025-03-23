@@ -529,3 +529,17 @@ require("lspconfig").rust_analyzer.setup({
     }
   }
 })
+require("lspconfig").clangd.setup({
+    cmd = { "clangd", "--background-index" },
+    filetypes = { "c", "cpp", "objc", "objcpp" },
+    root_dir = require("lspconfig.util").root_pattern("compile_commands.json", ".git"),
+    on_attach = function(client, bufnr)
+        -- Activar formateo automático al guardar
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            callback = function()
+                vim.lsp.buf.format({ async = false })
+            end,
+        })
+    end,
+})
