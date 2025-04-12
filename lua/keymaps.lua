@@ -55,6 +55,13 @@ vim.cmd([[
 --         require("telescope.builtin").project,
 --     { desc = "[S]Search th:is shite [P]rojekt" }
 -- )
+vim.keymap.set("i", "<C-l>", "<C-o>a", { noremap = true, silent = true, desc = "Move cursor right in insert mode" })
+-- En modo normal: Agrega `;` al final de la línea y no vuelve atrás
+vim.keymap.set("n", "<C-,>", "A;<Esc>", { noremap = true, silent = true, desc = "Insert ; at end of line" })
+
+-- En modo insert: Agrega `;`, pero manteniéndote en modo insert
+vim.keymap.set("i", "<C-,>", "<Esc>A;<Esc>a", { noremap = true, silent = true, desc = "Insert ; at end of line in insert mode" })
+
 --------------------------------------------------------------------------- GUARDAR
 -- Ctrl+s para guardar el buffer actual
 vim.keymap.set("n", "<C-s>", ":w<CR>", { noremap = true, silent = true, desc = "Save current buffer" })
@@ -96,11 +103,26 @@ end, { desc = "Toggle comment on selected lines" })
 --     -- require("telescope.builtin").lsp_document_symbols,
 --     { desc = "[S]earch [S]ymbols" }
 -- )
+
+local function find_project_root()
+    local dir = vim.fn.expand("%:p:h")
+    while dir ~= "/" do
+        if vim.fn.filereadable(dir .. "/Cargo.toml") == 1
+            or vim.fn.filereadable(dir .. "/CMakeLists.txt") == 1
+            or vim.fn.filereadable(dir .. "/Makefile") == 1
+            or vim.fn.isdirectory(dir .. "/build") == 1 then
+            return dir
+        end
+        dir = vim.fn.fnamemodify(dir, ":h")
+    end
+    return vim.fn.getcwd()
+end
+
 -------------------------------------------------------------------------- F5
 
 -- Función para ejecutar un proyecto de Godot normal (sin tocar Rust)
 local function run_godot_project()
-    local cwd = vim.fn.getcwd()
+    local cwd = find_project_root()
     local godot_project = cwd .. "/project.godot"
 
     if vim.fn.filereadable(godot_project) == 1 then
@@ -112,6 +134,7 @@ local function run_godot_project()
 end
 
 local function run_godot_with_rust()
+    
     local cwd = vim.fn.getcwd() -- Directorio actual
     local file_path = vim.fn.expand("%:p") -- Ruta completa del archivo actual
 
@@ -146,36 +169,34 @@ local function run_godot_with_rust()
 end
 
 local function run_c_project()
-    local cwd = vim.fn.getcwd()
-    local project_name = vim.fn.fnamemodify(cwd, ":t") -- Nombre del proyecto (igual que la carpeta)
-
-    -- Comando base para ejecutar el juego después de compilar
+    local cwd = find_project_root()
+    local project_name = vim.fn.fnamemodify(cwd, ":t")
     local run_command = string.format("exec ./%s", project_name)
-
-    -- Definir el comando de compilación según el tipo de proyecto
     local compile_cmd
-    if vim.fn.filereadable(cwd .. "/CMakeLists.txt") == 1 then
-        compile_cmd = string.format("mkdir -p build && cd build && cmake .. && make && cd .. && cd build && %s", run_command)
+
+    local cpp_files = vim.fn.globpath(cwd, "*.cpp", false, true)
+    local c_files = vim.fn.globpath(cwd, "*.c", false, true)
+
+    if #cpp_files > 0 then
+        compile_cmd = string.format("cd %s && g++ *.cpp -o %s -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 && %s", cwd, project_name, run_command)
+        vim.notify("Compilando y ejecutando con G++ y Raylib en WezTerm...", vim.log.levels.INFO)
+    elseif vim.fn.filereadable(cwd .. "/CMakeLists.txt") == 1 then
+        compile_cmd = string.format("cd %s && mkdir -p build && cd build && cmake .. && make && cd .. && cd build && %s", cwd, run_command)
         vim.notify("Compilando y ejecutando con CMake en WezTerm...", vim.log.levels.INFO)
     elseif vim.fn.filereadable(cwd .. "/Makefile") == 1 then
-        compile_cmd = string.format("make && %s", run_command)
+        compile_cmd = string.format("cd %s && make && %s", cwd, run_command)
         vim.notify("Compilando y ejecutando con Make en WezTerm...", vim.log.levels.INFO)
+    elseif #c_files > 0 then
+        compile_cmd = string.format("cd %s && gcc *.c -o %s -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 && %s", cwd, project_name, run_command)
+        vim.notify("Compilando y ejecutando con GCC en WezTerm...", vim.log.levels.INFO)
     else
-        local c_files = vim.fn.glob("*.c", false, true)
-        if #c_files > 0 then
-            compile_cmd = string.format("gcc *.c -o %s -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 && %s", project_name, run_command)
-            vim.notify("Compilando y ejecutando con GCC en WezTerm...", vim.log.levels.INFO)
-        else
-            vim.notify("No se detectó un proyecto de C válido.", vim.log.levels.WARN)
-            return
-        end
+        vim.notify("No se detectó un proyecto de C válido.", vim.log.levels.WARN)
+        return
     end
 
-    -- Comando para abrir WezTerm y cerrar el panel automáticamente cuando el juego termine
     local wezterm_launch_cmd = string.format("wezterm cli split-pane --bottom --percent 30 -- bash -c '%s'", compile_cmd)
-
-    -- Ejecutar el comando en WezTerm
     local result = os.execute(wezterm_launch_cmd)
+
     if result == 0 then
         vim.notify("Ejecución lanzada en WezTerm.", vim.log.levels.INFO)
     else
@@ -183,59 +204,86 @@ local function run_c_project()
     end
 end
 
+-- Función para ejecutar un proyecto de Rust normal
+local function run_rust_project()
+    local cwd = find_project_root()
+    local cargo_toml = cwd .. "/Cargo.toml"
 
-
-
--- Mapeo de <F5>: Ejecuta Godot normal o Rust+Godot según el contexto
-vim.keymap.set("n", "<F5>", function()
-    local file_path = vim.fn.expand("%:p")
-    local cwd = vim.fn.getcwd()
-
-    if file_path:match("/rust/src/") then
-        run_godot_with_rust()
-    elseif vim.fn.filereadable(cwd .. "/project.godot") == 1 then
-        run_godot_project()
-    elseif file_path:match("%.c$") or vim.fn.filereadable(cwd .. "/CMakeLists.txt") == 1 or vim.fn.filereadable(cwd .. "/Makefile") == 1 then
-        run_c_project()
-    else
-        vim.notify("No se detectó un proyecto válido para ejecutar.", vim.log.levels.WARN)
-    end
-end, { noremap = true, silent = true, desc = "Run Godot, Rust, or C project depending on context" })
----------------------------------------------------- F4 RUST BUILD
-
-vim.keymap.set({ "n", "v", "i" }, "<F4>", function()
-    local cwd = vim.fn.getcwd()
-    local file_path = vim.fn.expand("%:p")
-
-    -- Si estamos dentro de `rust/`, subimos un nivel para obtener la raíz del proyecto
-    if cwd:match("/rust$") then
-        cwd = cwd:gsub("/rust$", "")
-    end
-
-    local rust_path = cwd .. "/rust"
-    local cargo_toml = rust_path .. "/Cargo.toml"
-
-    if file_path:match(rust_path .. "/src/") and vim.fn.filereadable(cargo_toml) == 1 then
-        vim.notify("Compilando Rust...", vim.log.levels.INFO)
-
-        -- Comando que deja `exit` preescrito en la terminal
+    if vim.fn.filereadable(cargo_toml) == 1 then
+        vim.notify("Compilando y ejecutando Rust...", vim.log.levels.INFO)
         local wezterm_cmd = string.format(
-            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && cargo build > build_log.txt 2>&1; " ..
-            "if grep -qE \"(error:|warning:)\" build_log.txt; then cat build_log.txt; echo \"\\nPresiona ENTER para cerrar...\"; read; exit; else rm build_log.txt; exit; fi'",
-            rust_path
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && cargo build && cargo run; exit'",
+            cwd
         )
-
         local result = os.execute(wezterm_cmd)
-
         if result == 0 then
-            vim.notify("Compilación sin errores ni warnings. Pane cerrado.", vim.log.levels.INFO)
+            vim.notify("Rust ejecutado en WezTerm.", vim.log.levels.INFO)
         else
-            vim.notify("Errores o warnings detectados. WezTerm se mantiene abierto (presiona ENTER para cerrar).", vim.log.levels.WARN)
+            vim.notify("Error al ejecutar Rust.", vim.log.levels.ERROR)
         end
     else
         vim.notify("No se detectó un proyecto válido de Rust.", vim.log.levels.WARN)
     end
-end, { noremap = true, silent = true, desc = "Build Rust project" })
+end
+
+-- Mapeo de <F5>: Ejecuta Godot, Rust o C según el contexto
+vim.keymap.set({ "n", "v", "i" }, "<F5>", function()
+    vim.cmd("wa")
+    local cwd = find_project_root()
+    local file_path = vim.fn.expand("%:p")
+
+    if vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
+        run_rust_project()
+    elseif vim.fn.filereadable(cwd .. "/project.godot") == 1 then
+        run_godot_project()
+    elseif file_path:match("/rust/src/") and vim.fn.isdirectory(cwd .. "/godot") then
+        run_godot_with_rust()
+    else
+        run_c_project()
+    end
+end, { noremap = true, silent = true, desc = "Run project depending on context" })
+
+---------------------------------------------------- F4 RUST BUILD
+vim.keymap.set({ "n", "v", "i" }, "<F4>", function()
+    vim.cmd("wa")
+    local cwd = find_project_root()
+
+    if vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
+        vim.notify("Compilando Rust con Cargo Build en " .. cwd, vim.log.levels.INFO)
+        local wezterm_cmd = string.format(
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && cargo build > build_log.txt 2>&1; " ..
+            "if grep -qE \"(error:|warning:)\" build_log.txt; then cat build_log.txt; echo \"\\nPresiona ENTER para cerrar...\"; read; exit; else rm build_log.txt; exit; fi'",
+            cwd
+        )
+        local result = os.execute(wezterm_cmd)
+        if result == 0 then
+            vim.notify("Cargo Build sin errores. Pane cerrado.", vim.log.levels.INFO)
+        else
+            vim.notify("Errores detectados en Cargo Build. WezTerm se mantiene abierto.", vim.log.levels.WARN)
+        end
+
+    elseif vim.fn.filereadable(cwd .. "/CMakeLists.txt") == 1 then
+        vim.notify("Compilando C con CMake...", vim.log.levels.INFO)
+        local wezterm_cmd = string.format(
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && mkdir -p build && cd build && cmake .. && make > build_log.txt 2>&1; " ..
+            "if grep -qE \"(error:|warning:)\" build_log.txt; then cat build_log.txt; echo \"\\nPresiona ENTER para cerrar...\"; read; exit; else rm build_log.txt; exit; fi'",
+            cwd
+        )
+        os.execute(wezterm_cmd)
+
+    elseif vim.fn.filereadable(cwd .. "/Makefile") == 1 then
+        vim.notify("Compilando C con Makefile...", vim.log.levels.INFO)
+        local wezterm_cmd = string.format(
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && make > build_log.txt 2>&1; " ..
+            "if grep -qE \"(error:|warning:)\" build_log.txt; then cat build_log.txt; echo \"\\nPresiona ENTER para cerrar...\"; read; exit; else rm build_log.txt; exit; fi'",
+            cwd
+        )
+        os.execute(wezterm_cmd)
+
+    else
+        vim.notify("No se detectó un proyecto válido de Rust o C.", vim.log.levels.WARN)
+    end
+end, { noremap = true, silent = true, desc = "Build Rust or C project" })
 
 -------------------------------------------------------------------------- F6
 -- -- Ejecutar Godot con DAP en una segunda pantalla

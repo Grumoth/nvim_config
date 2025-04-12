@@ -73,6 +73,7 @@ require("nvim-treesitter.configs").setup {
         "c",
         "cpp",
         "rust",
+        "glsl",
         "c_sharp",
         "gdscript",
         "lua",
