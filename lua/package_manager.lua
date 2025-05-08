@@ -134,7 +134,7 @@ require("packer").startup(function(use)
     use { "neovim/nvim-lspconfig" }
     use { "williamboman/mason-lspconfig.nvim" }
     use { "williamboman/mason.nvim" }
-    use { "jose-elias-alvarez/null-ls.nvim" }
+    -- use { "jose-elias-alvarez/null-ls.nvim" }
 
     -- dap: debug adapter protocol (debugger)
 -- packer.nvim configuration
@@ -172,7 +172,13 @@ use {
     use { "saadparwaiz1/cmp_luasnip" }
     use("hrsh7th/cmp-buffer")
     use("hrsh7th/cmp-path")
-    use("ray-x/lsp_signature.nvim")
+    use {
+    "ray-x/lsp_signature.nvim",
+    config = function()
+        require("lsp_signature").setup({})
+    end
+    }
+    -- use("ray-x/lsp_signature.nvim")
     -- treesitter: code highlighting
     use {
         "nvim-treesitter/nvim-treesitter",

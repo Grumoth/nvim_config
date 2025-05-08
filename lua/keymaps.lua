@@ -55,6 +55,10 @@ vim.cmd([[
 --         require("telescope.builtin").project,
 --     { desc = "[S]Search th:is shite [P]rojekt" }
 -- )
+
+vim.keymap.set("v", "<C-S-c>", '"+y', { noremap = true, silent = true, desc = " COPIA AL CLIPBOARD" })
+vim.keymap.set("v", "<C-c>", '"+y', { noremap = true, silent = true ,desc = " COPIA AL CLIPBOARD"})
+
 vim.keymap.set("i", "<C-l>", "<C-o>a", { noremap = true, silent = true, desc = "Move cursor right in insert mode" })
 -- En modo normal: Agrega `;` al final de la línea y no vuelve atrás
 vim.keymap.set("n", "<C-,>", "A;<Esc>", { noremap = true, silent = true, desc = "Insert ; at end of line" })
@@ -232,12 +236,12 @@ vim.keymap.set({ "n", "v", "i" }, "<F5>", function()
     local cwd = find_project_root()
     local file_path = vim.fn.expand("%:p")
 
-    if vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
+    if file_path:match("/rust/src/") and vim.fn.isdirectory(cwd .. "/godot") then
+        run_godot_with_rust()
+    elseif vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
         run_rust_project()
     elseif vim.fn.filereadable(cwd .. "/project.godot") == 1 then
         run_godot_project()
-    elseif file_path:match("/rust/src/") and vim.fn.isdirectory(cwd .. "/godot") then
-        run_godot_with_rust()
     else
         run_c_project()
     end
@@ -299,7 +303,6 @@ end, { desc = "Start Godot Debug with Console" })
 vim.api.nvim_set_keymap('n', '<leader>dd', '<cmd>lua require("dapui").toggle()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>dc', '<cmd>lua require("dap").continue()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>db', '<cmd>lua require("dap").toggle_breakpoint()<CR>', { noremap = true, silent = true })
-
 
 
 

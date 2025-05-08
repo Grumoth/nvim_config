@@ -152,12 +152,12 @@ local on_attach = function(_, bufnr)
     -----------------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------------
     -- **Integrar lsp_signature.nvim**
-    require("lsp_signature").on_attach({
-        bind = true,
-        handler_opts = {
-            border = "rounded",
-        },
-    }, bufnr)
+    -- require("lsp_signature").on_attach({
+    --     bind = true,
+    --     handler_opts = {
+    --         border = "rounded",
+    --     },
+    -- }, bufnr)
     -----------------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------------
     -- In this case, we create a function that lets us more easily define mappings specific
@@ -236,7 +236,7 @@ local servers = {
 local ensure_installed_servers = { "lua_ls","jsonls" }
 
 -- [[ Configure null-ls ]]
-local null_ls = require("null-ls")
+-- local null_ls = require("null-ls")
 
 local lsp_format = function(bufnr)
     vim.lsp.buf.format {
@@ -265,13 +265,13 @@ local null_ls_on_attach = function(client, bufnr)
     })
 end
 
-null_ls.setup {
-    on_attach = null_ls_on_attach,
-    sources = {
-        null_ls.builtins.formatting.stylua,
-        null_ls.builtins.formatting.gdformat,
-    },
-}
+-- null_ls.setup {
+--     on_attach = null_ls_on_attach,
+--     sources = {
+--         null_ls.builtins.formatting.stylua,
+--         null_ls.builtins.formatting.gdformat,
+--     },
+-- }
 
 -- [[ Configure Neodev ]]
 require("neodev").setup()
@@ -418,18 +418,41 @@ require("project_nvim").setup {
     ignore_lsp = {}, -- No ignorar ningún servidor LSP
     -- Puedes añadir más configuraciones según tus necesidades
 }
--- **Configuración de lsp_signature.nvim**
-require("lsp_signature").setup {
-    bind = true, -- Usar los mapeos de <C-x> para cerrar la ventana
-    handler_opts = {
-        border = "rounded", -- Estilo de borde de la ventana flotante
-    },
-    hint_enable = true,
-    floating_window = true,
-    floating_window_above_cur_line = true,
-    fix_pos = true,
-    -- Puedes agregar más opciones según tus preferencias
-}
+
+local lsp_signature = require("lsp_signature")
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+------- MINIMALISTA POPUP
+-- require("lsp_signature").setup({
+--   bind = true,
+--   floating_window = false,
+-- })
+require("lsp_signature").setup({
+  bind = true,
+  floating_window = true,
+  hint_enable = false,
+  floating_window_above_cur_line = true,
+  handler_opts = {
+    border = "rounded"
+  },
+  max_width = 80,
+  max_height = 3,
+    doc_lines = 0, -- 👈 SOLO muestra los argumentos, nada de documentación
+  close_timeout = 2000,
+})
+-- --**Configuración de lsp_signature.nvim**
+-- require("lsp_signature").setup {
+--     bind = true, -- Usar los mapeos de <C-x> para cerrar la ventana
+--     handler_opts = {
+--         border = "rounded", -- Estilo de borde de la ventana flotante
+--     },
+--     hint_enable = true,
+--     floating_window = true,
+--     floating_window_above_cur_line = true,
+--     fix_pos = true,
+--     doc_lines = 0,
+--     -- Puedes agregar más opciones según tus preferencias
+-- }
 require("luasnip.loaders.from_lua").load {
     paths = "~/.config/nvim/lua/user/snippets/",
 }
