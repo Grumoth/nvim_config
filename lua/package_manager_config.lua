@@ -231,6 +231,7 @@ local servers = {
             telemetry = { enable = false },
         },
     },
+    ols={},
 }
 
 local ensure_installed_servers = { "lua_ls","jsonls" }
@@ -307,6 +308,7 @@ for server, opts in pairs(servers) do
         settings = opts,
     
     }
+
 end
 
 -- [[ Configure Cmp (2), Luasnip ]]

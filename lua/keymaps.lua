@@ -114,6 +114,8 @@ local function find_project_root()
         if vim.fn.filereadable(dir .. "/Cargo.toml") == 1
             or vim.fn.filereadable(dir .. "/CMakeLists.txt") == 1
             or vim.fn.filereadable(dir .. "/Makefile") == 1
+            or vim.fn.filereadable(dir .. "/main.odin") == 1
+            or vim.fn.filereadable(dir .. "/odin.mod") == 1
             or vim.fn.isdirectory(dir .. "/build") == 1 then
             return dir
         end
@@ -169,6 +171,28 @@ local function run_godot_with_rust()
         end
     else
         vim.notify("No se detectó un proyecto válido de Rust+Godot.", vim.log.levels.WARN)
+    end
+end
+local function run_odin_project()
+    local cwd = find_project_root()
+    local main_odin = cwd .. "/main.odin"
+
+    if vim.fn.filereadable(main_odin) == 1 then
+        vim.notify("Ejecutando proyecto Odin...", vim.log.levels.INFO)
+
+        local wezterm_cmd = string.format(
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && odin run .; read -n1'", cwd
+        )
+
+        local result = os.execute(wezterm_cmd)
+
+        if result == 0 then
+            vim.notify("Odin ejecutado correctamente.", vim.log.levels.INFO)
+        else
+            vim.notify("Error al ejecutar Odin.", vim.log.levels.ERROR)
+        end
+    else
+        vim.notify("No se detectó un proyecto Odin válido (main.odin no encontrado).", vim.log.levels.WARN)
     end
 end
 
@@ -242,6 +266,8 @@ vim.keymap.set({ "n", "v", "i" }, "<F5>", function()
         run_rust_project()
     elseif vim.fn.filereadable(cwd .. "/project.godot") == 1 then
         run_godot_project()
+    elseif vim.fn.filereadable(cwd .. "/main.odin") == 1 then
+        run_odin_project()
     else
         run_c_project()
     end
@@ -284,10 +310,20 @@ vim.keymap.set({ "n", "v", "i" }, "<F4>", function()
         )
         os.execute(wezterm_cmd)
 
+    elseif vim.fn.filereadable(cwd .. "/main.odin") == 1 then
+        vim.notify("Compilando proyecto Odin...", vim.log.levels.INFO)
+        local wezterm_cmd = string.format(
+            "wezterm cli split-pane --bottom --percent 30 -- bash -c 'cd %s && odin build . > build_log.txt 2>&1; " ..
+            "if grep -qE \"(error:|warning:)\" build_log.txt; then cat build_log.txt; echo \"\\nPresiona ENTER para cerrar...\"; read; exit; else rm build_log.txt; exit; fi'",
+            cwd
+        )
+        os.execute(wezterm_cmd)
+
     else
-        vim.notify("No se detectó un proyecto válido de Rust o C.", vim.log.levels.WARN)
+        vim.notify("No se detectó un proyecto válido de Rust, C o Odin.", vim.log.levels.WARN)
     end
-end, { noremap = true, silent = true, desc = "Build Rust or C project" })
+end, { noremap = true, silent = true, desc = "Build Rust, C or Odin project" })
+
 
 -------------------------------------------------------------------------- F6
 -- -- Ejecutar Godot con DAP en una segunda pantalla
