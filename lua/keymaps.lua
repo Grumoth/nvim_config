@@ -199,15 +199,36 @@ end
 local function run_c_project()
     local cwd = find_project_root()
     local project_name = vim.fn.fnamemodify(cwd, ":t")
-    local run_command = string.format("exec ./%s", project_name)
-    local compile_cmd
+    --local run_command = string.format("./%s || echo '[ERROR] Falló la ejecución'; echo '[FIN] Pulsa ENTER'; read", project_name)
+    local run_command = string.format("./%s 2>&1 | tee run_log.txt; echo '[FIN] Pulsa ENTER...'; read", project_name)
 
+    local compile_cmd
     local cpp_files = vim.fn.globpath(cwd, "*.cpp", false, true)
     local c_files = vim.fn.globpath(cwd, "*.c", false, true)
 
+    local is_sdl = false
+    -- Busca SDL2 en los includes
+    for _, file in ipairs(cpp_files) do
+        local lines = vim.fn.readfile(file)
+        for _, line in ipairs(lines) do
+            if line:match("#include%s*<SDL2/SDL.h>") then
+                is_sdl = true
+                break
+            end
+        end
+        if is_sdl then break end
+    end
+
     if #cpp_files > 0 then
-        compile_cmd = string.format("cd %s && g++ *.cpp -o %s -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 && %s", cwd, project_name, run_command)
-        vim.notify("Compilando y ejecutando con G++ y Raylib en WezTerm...", vim.log.levels.INFO)
+        if is_sdl then
+            --compile_cmd = string.format("cd %s && g++ *.cpp -o %s `sdl2-config --cflags --libs` && %s", cwd, project_name, run_command)
+            compile_cmd = string.format("cd %s && make && %s", cwd, run_command)
+
+            vim.notify("Compilando y ejecutando con G++ y SDL2 en WezTerm...", vim.log.levels.INFO)
+        else
+            compile_cmd = string.format("cd %s && g++ *.cpp -o %s -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 && %s", cwd, project_name, run_command)
+            vim.notify("Compilando y ejecutando con G++ y Raylib en WezTerm...", vim.log.levels.INFO)
+        end
     elseif vim.fn.filereadable(cwd .. "/CMakeLists.txt") == 1 then
         compile_cmd = string.format("cd %s && mkdir -p build && cd build && cmake .. && make && cd .. && cd build && %s", cwd, run_command)
         vim.notify("Compilando y ejecutando con CMake en WezTerm...", vim.log.levels.INFO)
@@ -218,7 +239,7 @@ local function run_c_project()
         compile_cmd = string.format("cd %s && gcc *.c -o %s -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 && %s", cwd, project_name, run_command)
         vim.notify("Compilando y ejecutando con GCC en WezTerm...", vim.log.levels.INFO)
     else
-        vim.notify("No se detectó un proyecto de C válido.", vim.log.levels.WARN)
+        vim.notify("No se detectó un proyecto C/C++ válido.", vim.log.levels.WARN)
         return
     end
 
@@ -231,6 +252,7 @@ local function run_c_project()
         vim.notify("Error al lanzar WezTerm.", vim.log.levels.ERROR)
     end
 end
+
 
 -- Función para ejecutar un proyecto de Rust normal
 local function run_rust_project()
