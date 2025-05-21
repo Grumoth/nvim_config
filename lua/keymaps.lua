@@ -24,13 +24,21 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 
 -- ----------------------------------------------------------------------------- CHELESCOPE
 -- Buscar Texto en el Proyecto
-vim.keymap.set(
-    "n",
-    "<leader>sg",
-    require("telescope.builtin").live_grep,
-    { desc = "[S]earch by [G]rep" }
-)
+-- vim.keymap.set(
+--     "n",
+--     "<leader>sg",
+--     require("telescope.builtin").live_grep,
+--     { desc = "[S]earch by [G]rep" }
+-- )
+local builtin = require("telescope.builtin")
 
+vim.keymap.set("n", "<leader>se", function()
+  builtin.live_grep({
+    additional_args = function()
+      return { "--fixed-strings" }
+    end
+  })
+end, { desc = "[S]earch by [G]rep (literal)" })
 -- Buscar Símbolos en el Proyecto
 vim.keymap.set(
     "n",
@@ -55,6 +63,7 @@ vim.cmd([[
 --         require("telescope.builtin").project,
 --     { desc = "[S]Search th:is shite [P]rojekt" }
 -- )
+
 
 vim.keymap.set("v", "<C-S-c>", '"+y', { noremap = true, silent = true, desc = " COPIA AL CLIPBOARD" })
 vim.keymap.set("v", "<C-c>", '"+y', { noremap = true, silent = true ,desc = " COPIA AL CLIPBOARD"})
