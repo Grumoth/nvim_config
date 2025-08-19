@@ -60,8 +60,8 @@ M.setup_listeners = function()
         dapui.open()
 
         -- Configurar autoscroll y pruebas después de abrir dapui
-        M.enable_repl_autoscroll()
-        M.test_repl()
+        -- M.enable_repl_autoscroll()
+        -- M.test_repl()
     end
 
     -- Cerrar dapui automáticamente al terminar la depuración
